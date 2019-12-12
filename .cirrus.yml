@@ -10,3 +10,4 @@ freebsd_12_task:
     - gmake
   test_script:
     - gmake test
+    - ci/print-test-failures.sh
