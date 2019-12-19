@@ -50,8 +50,11 @@ test_expect_success 'git sparse-checkout init' '
 	EOF
 	test_cmp expect repo/.git/info/sparse-checkout &&
 	test_cmp_config -C repo true core.sparsecheckout &&
-	ls repo >dir  &&
-	echo a >expect &&
+	ls -a repo >dir  &&
+	cat >expect <<-EOF &&
+		.git
+		a
+	EOF
 	test_cmp expect dir
 '
 
@@ -73,8 +76,9 @@ test_expect_success 'init with existing sparse-checkout' '
 		*folder*
 	EOF
 	test_cmp expect repo/.git/info/sparse-checkout &&
-	ls repo >dir  &&
+	ls -a repo >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		folder1
 		folder2
@@ -90,8 +94,11 @@ test_expect_success 'clone --sparse' '
 		!/*/
 	EOF
 	test_cmp expect actual &&
-	ls clone >dir &&
-	echo a >expect &&
+	ls -a clone >dir &&
+	cat >expect <<-EOF &&
+		.git
+		a
+	EOF
 	test_cmp expect dir
 '
 
@@ -119,8 +126,9 @@ test_expect_success 'set sparse-checkout using builtin' '
 	git -C repo sparse-checkout list >actual &&
 	test_cmp expect actual &&
 	test_cmp expect repo/.git/info/sparse-checkout &&
-	ls repo >dir  &&
+	ls -a repo >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		folder1
 		folder2
@@ -139,8 +147,9 @@ test_expect_success 'set sparse-checkout using --stdin' '
 	git -C repo sparse-checkout list >actual &&
 	test_cmp expect actual &&
 	test_cmp expect repo/.git/info/sparse-checkout &&
-	ls repo >dir  &&
+	ls -a repo >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		folder1
 		folder2
@@ -154,8 +163,9 @@ test_expect_success 'cone mode: match patterns' '
 	git -C repo read-tree -mu HEAD 2>err &&
 	test_i18ngrep ! "disabling cone patterns" err &&
 	git -C repo reset --hard &&
-	ls repo >dir  &&
+	ls -a repo >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		folder1
 		folder2
@@ -177,8 +187,9 @@ test_expect_success 'sparse-checkout disable' '
 	test_path_is_file repo/.git/info/sparse-checkout &&
 	git -C repo config --list >config &&
 	test_must_fail git config core.sparseCheckout &&
-	ls repo >dir &&
+	ls -a repo >dir &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		deep
 		folder1
@@ -191,25 +202,31 @@ test_expect_success 'cone mode: init and set' '
 	git -C repo sparse-checkout init --cone &&
 	git -C repo config --list >config &&
 	test_i18ngrep "core.sparsecheckoutcone=true" config &&
-	ls repo >dir  &&
-	echo a >expect &&
+	ls -a repo >dir  &&
+	cat >expect <<-EOF &&
+		.git
+		a
+	EOF
 	test_cmp expect dir &&
 	git -C repo sparse-checkout set deep/deeper1/deepest/ 2>err &&
 	test_must_be_empty err &&
-	ls repo >dir  &&
+	ls -a repo >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		deep
 	EOF
 	test_cmp expect dir &&
-	ls repo/deep >dir  &&
+	ls -a repo/deep >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		deeper1
 	EOF
 	test_cmp expect dir &&
-	ls repo/deep/deeper1 >dir  &&
+	ls -a repo/deep/deeper1 >dir  &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		deepest
 	EOF
@@ -234,7 +251,7 @@ test_expect_success 'cone mode: init and set' '
 		folder1
 		folder2
 	EOF
-	ls repo >dir &&
+	ls -a repo >dir &&
 	test_cmp expect dir
 '
 
@@ -256,8 +273,9 @@ test_expect_success 'revert to old sparse-checkout on bad update' '
 	test_must_fail git -C repo sparse-checkout set deep/deeper1 2>err &&
 	test_i18ngrep "cannot set sparse-checkout patterns" err &&
 	test_cmp repo/.git/info/sparse-checkout expect &&
-	ls repo/deep >dir &&
+	ls -a repo/deep >dir &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		deeper1
 		deeper2
@@ -313,8 +331,9 @@ test_expect_success 'cone mode: set with core.ignoreCase=true' '
 		/folder1/
 	EOF
 	test_cmp expect repo/.git/info/sparse-checkout &&
-	ls repo >dir &&
+	ls -a repo >dir &&
 	cat >expect <<-EOF &&
+		.git
 		a
 		folder1
 	EOF
