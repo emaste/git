@@ -724,8 +724,16 @@ process_split_commit () {
 		set_notree "$rev"
 		if test -n "$newparents"
 		then
-			cache_set "$rev" "$rev"
+			if test "$newparents" = "$parents"
+			then
+				# if all parents were subtrees, this can be a subtree commit
+				cache_set "$rev" "$rev"
+			else
+				# a mainline commit with tree missing is equivalent to the initial commit
+				cache_set "$rev" ""
+			fi
 		else
+			# no parents with valid subtree mappings means a commit prior to subtree add
 			cache_set "$rev" ""
 		fi
 		return
